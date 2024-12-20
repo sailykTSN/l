@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .calculator {
+            background-color: rgb(175, 237, 136);
+            margin-top: 25px;
+            margin-left:15px;
+            border: 5px  solid #00000080;
+            width: 700px;
+            height: 400px;
+        }
+        .form {
+            width: 200px;
+            float: left;
+            overflow: auto;            
+        }
+        .text {
+            border: 2px, solid #01520a80;
+            background-color: #ffffff;
+            font-style: italic;
+            font-size: 18px;
+            font-weight: bold;
+            height: 200px;
+            margin-top: 15px;  
+            margin-right: 15px;
+            height: 200px;
+            width: 450px;
+            float: right; 
+            text-indent: 20px;
+            text-align: center;
+
+        }
+        select {
+            width: 180px;
+            height: 50px;
+            padding: 10px;
+            font-size: 17px;
+            font-style:italic;
+            border: 2px solid #01520a80;        
+            background-color: rgba(2, 77, 0, 0.659);
+            color: aliceblue;
+            font-weight: bolder;
+            margin-left: 15px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        input[type=number] {
+            height: 35px;
+            width: 165px;
+            background-color: #ffffff;
+            font-style: italic;
+            font-weight: bold;
+            margin-top: 15px; 
+            margin-bottom: 30px;
+            margin-left: 15px;
+            text-align: center;
+        }
+        input[type=button] {
+            height: 35px;
+            width: 130px;
+            background-color: rgb(0, 33, 5);
+            color: #ffffff;
+            font-style: italic;
+            font-weight: bolder;
+            margin-left: 35px;
+            text-align: center;            
+        }
+        .header {
+            font-style: italic;
+            margin-left: 20px;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <div class="header">
+            <h1>Калькулятор вклада</h1>
+        </div>     
+        <div class="form">
+            <form name="calc" action="#" method="post" id="calc">
+                <select name="view" id="select-1">
+                    <option value="select">-Вид вклада-</option>
+                    <option value="1">Пополняемый</option>
+                    <option value="2">Срочный</option>
+                </select>
+                <select name="term" id="select-2">                
+                    <option class="select" value="select">-Срок вклада-</option>
+                    <option class="1" value="6" data-interest="20">6 месяцев, 20%</option>
+                    <option class="1" value="12" data-interest="22">1 год, 22%</option>
+                    <option class="1" value="18" data-interest="15">1,5 года, 15%</option>
+                    <option class="1" value="24" data-interest="10">2 года, 10%</option>
+                
+                    <option class="2" value="3" data-interest="20">3 месяца, 20%</option>
+                    <option class="2" value="6" data-interest="22">6 месяцев, 22%</option>
+                    <option class="2" value="9" data-interest="23">9 месяцев, 23%</option>
+                    <option class="2" value="12" data-interest="24">1 год, 24%</option>
+                    <option class="2" value="18" data-interest="18">1,5 года, 18%</option>
+                    <option class="2" value="24" data-interest="15">2 года, 15%</option>
+                </select>
+                <input name="sum" id="sum" type="number" min="1" max="8" style="font-size: 23px;" placeholder="Сумма, руб." required>
+                <input type="button" onclick="calculate()" value="Рассчитать">
+            </form>
+        </div>
+        <div class="text" id="text">                
+        </div>  
+        <script>
+            (() => {
+                const dynamicSelect = (id1, id2) => {
+                    const sel1 = document.getElementById(id1);
+                    const sel2 = document.getElementById(id2);
+                    const clone = sel2.cloneNode(true);
+                    const clonedOptions = clone.getElementsByTagName("option");
+                    refreshDynamicSelectOptions(sel1, sel2, clonedOptions);
+                    sel1.addEventListener('change', () => {
+                        refreshDynamicSelectOptions(sel1, sel2, clonedOptions);
+                    });
+                };
+                const refreshDynamicSelectOptions = (sel1, sel2, clonedOptions) => {
+                    while (sel2.options.length) {
+                        sel2.remove(0);
+                    }
+                    const selectedOption = sel1.options[sel1.selectedIndex].value;
+                    for (let i = 0; i < clonedOptions.length; i++) {
+                        const option = clonedOptions[i];
+                        if (option.classList.contains('select') ||
+                        option.classList.contains(selectedOption)) {
+                            sel2.appendChild(option.cloneNode(true));
+                        }
+                    }
+                    const event = new Event('change');
+                    sel2.dispatchEvent(event);
+                };
+                document.addEventListener("DOMContentLoaded", () => {
+                    dynamicSelect("select-1", "select-2");
+                });
+            })();
+            
+            function calculate() { 
+                var sel_1 = document.getElementById('select-1');
+                var value_1 = sel_1.value;
+                var t1 = sel_1.options[sel_1.selectedIndex].text;
+                var sel_2 = document.getElementById('select-2'); 
+                var value_2 = sel_2.value;
+                var t2 = sel_2.options[sel_2.selectedIndex].text;
+
+                var input_s = document.getElementById('sum');
+                var t3 = input_s.value;
+                  
+                var v = document.calc.view.value;
+                var P = document.calc.sum.value;
+                var t = document.calc.term.value; 
+                if (v==="1") {
+                    if (t !== "select" && t !== "") {
+                        var selectedOption = document.getElementById("select-2").options[document.getElementById("select-2").selectedIndex];
+                        var i = selectedOption.getAttribute("data-interest"); 
+                        var S = P * (1 + (i / 100) * (t / 12));
+                        var res = Math.round(S);
+                        document.querySelector('#text').innerHTML = `<p>Вклад "${t1}" на срок ${t2} годовой ставки на сумму ${t3} рублей.</p><p>В конце срока выполучите ${res} рублей.</p>`;
+                                               
+                    } else {
+                        alert("Пожалуйста, выберите срок вклада.");
+                    }
+                } else if (v==="2") {
+                    if (t !== "select" && t !== "") {
+                        var selectedOption = document.getElementById("select-2").options[document.getElementById("select-2").selectedIndex];
+                        var i = selectedOption.getAttribute("data-interest"); 
+                        var S = P * (1 + (i / 100))**(t / 12);
+                        var res = Math.round(S);
+                        document.querySelector('#text').innerHTML = `<p>Вклад "${t1}" на срок ${t2} годовой ставки на сумму ${t3} рублей.</p><p>В конце срока выполучите ${res} рублей.<p>`;                        
+                    } else {
+                        alert("Пожалуйста, выберите срок вклада.");
+                    }
+                }
+            } 
+        </script>       
+    </div>
+</body>
+</html>
